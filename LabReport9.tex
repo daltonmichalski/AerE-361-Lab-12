@@ -1,0 +1,75 @@
+\documentclass[11pt]{report}
+\usepackage{outline}
+\usepackage{pmgraph}
+\usepackage[normalem]{ulem}
+\title{\textbf{AerE 361 Lab 12 Report \\ Drone Wars}}
+\author{Dalton Michalski and Harlin Kissinger}
+\date{\oldstylenums{10}/\oldstylenums{30}/\oldstylenums{2018}}
+%--------------------Make usable space all of page
+\setlength\parindent{24pt}
+\setlength{\oddsidemargin}{0in}
+\setlength{\evensidemargin}{0in}
+\setlength{\topmargin}{0in}
+\setlength{\headsep}{-.25in}
+\setlength{\textwidth}{6.5in}
+\setlength{\textheight}{8.5in}
+\usepackage{xcolor}
+\definecolor{light-gray}{gray}{0.95}
+\newcommand{\code}[1]{\colorbox{light-gray}{\texttt{#1}}}
+%--------------------Indention
+\setlength{\parindent}{1cm}
+
+\begin{document}
+%--------------------Title Page
+\maketitle
+ 
+%--------------------Begin Outline
+\section{Problem Statement}
+\begin{item}
+\item The goal of this lab is to complete the partial two player game provided inside this weeks github repository, in which both players operate a "surveillance drone".  For each turn, the drones begin in a random location inside a pregenerated grid world, but are only allowed to see the 3X3 grid section surrounding them. Cells containing a "1" cannot be moved inside of and are considered obstacles. In order for each player to move at the end of the turn, the program will pass data to one of the following "challenges": \begin{enumerate}
+    \item \textbf{Calculation} Given a string of a mathematical expression, return the integer value of that expression.
+    \item \textbf{Sub-String} Given 2 strings, return a pointer to the beginning of the first occurrence of that string.
+    \item \textbf{Range} Given two integers, return the range between them as integers.
+    \item \textbf{Mean} Given an array of floats and the number of floats in the array, return the arithmetic mean as a float.
+    \item \textbf{Minimum} Given and array of floats and the number of floats in the array, return the minimum value as a float.
+    \item \textbf{Maximum} Given an array of floats and the number of floats in the array, return the maximum value as a float.
+    \item \textbf{Reverse} Given a string, return the same string in reverse order.
+    \item \textbf{Find} Given a string and a char, return the integer index of the position of the first occurrence.
+    \item \textbf{Tokenize} Given a string, tokenize it by whitespace and return a pointer to a malloced 1-D array of the token strings.
+\end{enumerate} 
+For each of the challenges above, a function is to written to perform each of the specified tasks. The size and type of the data passed in each case can be found inside the \code{DroneWars.h} header file included inside the repository. Whether or not each of these functions returns the correct information during a given turns decides whether or not each "drone" is allowed to move to a new space. At the end of the game, the drone that has explored the most of the map will be declared victorious.
+\end{item}
+\newpage
+\section{Program Design}
+\\ For each of the functions written, the entire \code{struct Round round} was passed as the input.
+\begin{enumerate}
+    \item \textbf{Calculation:} This function receives one input, a string that represents a mathematical expression. In order to pass this expression to the commandline, the \code{popen} function is used. This functon has been tested and works as expected.
+    \item \textbf{Sub-String:} Using the \code{strstr()} function, this function is able to solve the problem and create a pointer to the beginning of the first occurence of that string in a single line of code. This function has been tested inside the simulation and works as expected.
+    \item \textbf{Range:} This functions requires two inputs, which can be found at  following memory addresses \begin{enumerate}
+        \item \code{int a = round.chal\_dat.range.a}
+        \item \code{int b = round.chal\_dat.range.b}
+    \end{enumerate}
+    The absolute value of (b - a) is assigned to a third integer, and this third integer is also the value returned by this function to the simulation. This program has been tested multiple times and runs as expected.
+    \item \textbf{Mean:} This function requires two inputs, an array of numbers to be averaged, as well as the number of datum in the given array. The number of data points can be found at \code{int n = round.chal\_dat.minmaxmean.datalen}. The other data passed to this function is a pointer to the array containing all data. In order to find the mean of this data, a for loop with the form \code{sum += round.chal\_dat.minmaxmean.nums[i]} is used to iterate through all \code{n} data points, During each iteration, the value of each ith data point is added to the running sum. This sum is then divided by \code{n} and returned to the simulation. This function has been heavily tested and works as expected.
+    \item \textbf{Minimum:} This function is passed the same two datum as the \textbf{Mean} challenge. In order to find the minimum value, a variables is assigned the value in the first slot of the data array, a for loop is then used to iterate through the remaining data points, each time checking that it isn't smaller than the initial minimum. If it is, the first data point is replaced by the new minimum and the program continues. The for loop continues until all data points have been checked, at this point, the minimum value is then returned to the simulation.
+    \item \textbf{Maximum:} This function is identical in every facet to the \textbf{Minimum} fucntion explained above, with the only difference being the greater than sign inside the for loop used to compare all values in the opposite orientation. This function has been tested and works as expected.
+    \item \textbf{Reverse:} This function is currently able to correctly reverse the order of the provided string,however, we are yet to be able to write this reversed string to the correct memory location.
+    \item \textbf{Find:} This function is passed both a string and a char. In order to return the character index of the given char in the string, and for loop is used to iterate through all chars in the given string, and an if conditon is used to stop the loop when the ith character matches the char being searched for. The function then returns the value of the loop index variable \code{i} to the simulation. This function has been tested and works as expected.
+    \item \textbf{Tokenize:} \code{segmentaion fault (core dumped)}
+\end{enumerate}
+\section{Discussion}
+\\The main problems encountered while writing this code were all related to interacting with the provided files. Special care had to be taken in order to ensure each of the challenges was accessing the correct data from the correct structure. Another time consuming portion was trying to figure out how to write the output of all functions to the generic void pointer ans\_ptr as instructed in the manual. In our code, a large switch statement was used under each of the so called "agent" functions. Which case, or function, was called depended on the challenge type passed by the simulation to each respective agent. We were unable to get the "tokenize" function to work correctly, as is was insisten upon returning \code{segmentation fault (core dumped)} despite our best debugging efforts.
+\newpage
+\section{References}
+\\ https://reu.dimacs.rutgers.edu/Symbols.pdf
+\\ https://fresh2refresh.com/c-programming/c-function/c-math-h-library-functions/
+\\ https://www.overleaf.com/learn/latex/Cross\_referencing\_sections\_and\_equations/
+\\ https://www.quora.com/What-is-argc-argv-in-C-What-is-its-purpose-Who-introduced-those-functions
+\\ https://www.geeksforgeeks.org/structures-c/
+\\ http://steve.hollasch.net/cgindex/coding/ieeefloat.html
+\\ https://stackoverflow.com/questions/26284110/strdup-confused-about-warnings-implicit-declaration-makes-pointer-with
+\\https://www.w3resource.com/c-programming-exercises/array/c-array-exercise-18.php
+\\https://www.quora.com/How-can-I-pass-a-string-as-an-argument-to-a-function-and-return-a-string-in-C
+\\https://stackoverflow.com/questions/21488544/triple-pointers-in-c-is-it-a-matter-of-style
+\\https://www.quora.com/How-can-I-pass-a-string-as-an-argument-to-a-function-and-return-a-string-in-C
+\end{document}
